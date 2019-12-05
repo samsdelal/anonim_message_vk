@@ -10,7 +10,10 @@ from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 from vk_api.longpoll import VkLongPoll, VkEventType
 from vk_api.utils import get_random_id
 import requests
+from datetime import datetime, date, time
 import sqlite3
+
+
 
 # Сначала должен получить token
 # Затем , должен авторизоваться
@@ -34,13 +37,20 @@ bio = ('Мой создатель - Борис Кузнецов\n'
 
 keyboard = VkKeyboard(one_time=True)
 
-keyboard.add_button('Мой создатель', color=VkKeyboardColor.POSITIVE)
-keyboard.add_button('Поддержать проект', color=VkKeyboardColor.POSITIVE)
+keyboard.add_button('Поддержать проект 💰', color=VkKeyboardColor.POSITIVE)
 keyboard.add_line()
-keyboard.add_button('Получить id', color=VkKeyboardColor.PRIMARY)
-keyboard.add_button('Как это работает?', color=VkKeyboardColor.PRIMARY)
+keyboard.add_button('Есть ли в боте этот человек? 🔎', color=VkKeyboardColor.NEGATIVE)
 keyboard.add_line()
-keyboard.add_button('Есть ли в боте этот человек?', color=VkKeyboardColor.NEGATIVE)
+keyboard.add_button('Справка 📝', color=VkKeyboardColor.PRIMARY)
+keyboard.add_button('Получить id 📲', color=VkKeyboardColor.PRIMARY)
+
+keyboard_1 = VkKeyboard(one_time=True)
+
+keyboard_1.add_button('Как это работает? 💻', color=VkKeyboardColor.PRIMARY)
+keyboard_1.add_line()
+keyboard_1.add_button('Мой создатель 🔩', color=VkKeyboardColor.POSITIVE)
+keyboard_1.add_line()
+keyboard_1.add_button('Назад')
 
 about_bot = ('Этот бот позволяет отправлять людям анонимные сообщения\n'
              '\n'
@@ -54,24 +64,31 @@ about_bot = ('Этот бот позволяет отправлять людям
              'Так что скорее зови друзей ,\n'
              'И отсылай им свои анонимки)')
 
+data_now = str(datetime.now())
+
 session = requests.Session()
+
+
 
 for event in longpoll.listen():
     if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
-        y = 'id{}: "{}"'.format(event.user_id, event.text,end='')
-        #print(y, end='')
+
+        f = open('log.txt', 'a')
+
+        'id{}: "{}"'.format(event.user_id, event.text, ' ', end=' ')
 
         name_o = vk.users.get(user_ids=event.user_id, fields='city')
         your_name = ((str(name_o)).split(" ")[3]).replace("'", '').replace(',', '')
         # city_o = ((str(name_o)).split(" ")[14]).replace("'", '').replace(',', '').replace('}', '').replace(']', '')
-        vk.messages.send(user_id='558924310', random_id=get_random_id(), message=(y + your_name))
 
+        f.write('id'+str(event.user_id)+' '+str(event.text)+" "+str(your_name)+" "+data_now+'\n')
+        #print('id{}: "{}"'.format(event.user_id, event.text, ' ', end=' '), your_name)
 
-        #Тестовое сообщение
+        # Тестовое сообщение
         if event.text == 'hello':
             vk.messages.send(user_id=event.user_id, random_id=get_random_id(), message='Whats up')
 
-        #Информация о создателе бота
+        # Информация о создателе бота
         elif event.text == 'Мой создатель':
             photo = vk.users.get(user_id=event.user_id, fields='photo_max_orig')
             photo_id = vk.users.get(user_id=event.user_id, fields='photo_id')
@@ -82,17 +99,18 @@ for event in longpoll.listen():
             vk.messages.send(user_id=event.user_id, random_id=get_random_id(), message=bio,
                              attachment='photo558924310_457239018', keyboard=keyboard.get_keyboard())
 
-        #Вкладка поддержать проект
-        elif event.text == 'Поддержать проект':
+        # Вкладка поддержать проект
+        elif event.text == 'Поддержать проект 💰':
             message = (
                 'Чтобы поддержать прект, переведите сюда рублик и укажите свой ID, ваш  ID: ' + str(event.user_id)
                 , '\nmoney.yandex.ru/to/410017167191435')
             vk.messages.send(user_id=event.user_id, random_id=get_random_id(), message=message
                              , keyboard=keyboard.get_keyboard())
 
+
         elif str(event.text).startswith('send/'):
             y = str(event.text).split('/')
-            #print(y[1])
+            # print(y[1])
             try:
                 vk.messages.send(user_id=y[1], random_id=get_random_id(), message=y[2],
                                  keyboard=keyboard.get_keyboard())
@@ -104,7 +122,7 @@ for event in longpoll.listen():
                                          'хоть что-то этому боту',
                                  keyboard=keyboard.get_keyboard())
 
-        elif event.text == 'Как это работает?':
+        elif event.text == 'Как это работает? 💻':
             vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
                              message="Вы просто должны должны отправить боту сообщние боту как \n  'send/id польователя(тут обязательно цифры, которые ты можешь получить, нажав на Получить id)/ваше сообщение' например:"
                              , keyboard=keyboard.get_keyboard())
@@ -112,7 +130,7 @@ for event in longpoll.listen():
                              message="send/558924310/Hi!"
                              , keyboard=keyboard.get_keyboard())
 
-        elif event.text == 'Получить id':
+        elif event.text == 'Получить id 📲':
             vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
                              message='Просто отправь ссылку пользователя нам'
                              , keyboard=keyboard.get_keyboard())
@@ -122,21 +140,21 @@ for event in longpoll.listen():
             try:
                 if str(event.text).find('id') != -1:
                     short_id_have = str(event.text)[str(event.text).find('id') + 2:]
-                    #print(short_id_have)
+                    # print(short_id_have)
                     vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
-                                     message=short_id_have
+                                     message=('id Пользователя: ', short_id_have)
                                      , keyboard=keyboard.get_keyboard())
 
                 else:
                     short_id = str(event.text)[str(event.text).find('com/') + 4:]
-                    #print(short_id)
+                    # print(short_id)
                     ne_short = vk.users.get(user_ids=short_id, fields='photo_id')
                     id_split = str(ne_short).split(' ')
                     id_no = id_split[1].replace(',', '')
                     # aaaaa = str(id_no)[1:id_no.find("'")]
-                    #print(id_no)
+                    # print(id_no)
                     vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
-                                     message=id_no
+                                     message=('id Пользователя: ', id_no)
                                      , keyboard=keyboard.get_keyboard())
             except vk_api.exceptions.ApiError:
                 vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
@@ -148,7 +166,7 @@ for event in longpoll.listen():
                              message=about_bot
                              , keyboard=keyboard.get_keyboard())
 
-        elif event.text == 'Есть ли в боте этот человек?':
+        elif event.text == 'Есть ли в боте этот человек? 🔎':
             vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
                              message="отправь ссылку на человека и вначале добавь этот знак *"
                              , keyboard=keyboard.get_keyboard())
@@ -160,7 +178,7 @@ for event in longpoll.listen():
                 try:
                     if str(ok).find('id') != -1:
                         short_id_have = str(ok)[str(ok).find('id') + 2:]
-                        #print(short_id_have)
+                        # print(short_id_have)
                         # vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
                         # message=short_id_have
                         # , keyboard=keyboard.get_keyboard())
@@ -179,12 +197,12 @@ for event in longpoll.listen():
                                              , keyboard=keyboard.get_keyboard())
                     else:
                         short_id = str(ok)[str(ok).find('com/') + 4:]
-                        #print(short_id)
+                        # print(short_id)
                         ne_short = vk.users.get(user_ids=short_id, fields='photo_id')
                         id_split = str(ne_short).split(' ')
                         id_no = id_split[1].replace(',', '')
                         # aaaaa = str(id_no)[1:id_no.find("'")]
-                        #print(id_no)
+                        # print(id_no)
                         # vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
                         # message=id_no
                         # , keyboard=keyboard.get_keyboard())
@@ -203,6 +221,15 @@ for event in longpoll.listen():
                     vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
                                      message='Неправильная ссылка пользователя'
                                      , keyboard=keyboard.get_keyboard())
+
+        elif event.text == 'Справка 📝':
+            vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
+                             message='👍'
+                             , keyboard=keyboard_1.get_keyboard())
+        elif event.text == 'Назад':
+            vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
+                             message='👍'
+                             , keyboard=keyboard.get_keyboard())
 
 
 
