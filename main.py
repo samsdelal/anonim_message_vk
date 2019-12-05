@@ -112,10 +112,18 @@ for event in longpoll.listen():
             y = str(event.text).split('/')
             # print(y[1])
             try:
+                conn = sqlite3.connect('my_db.db')
+                cursor = conn.cursor()
+                cursor.execute(("INSERT INTO 'info' VALUES (?, ?)"), (y[1], y[2]))
                 vk.messages.send(user_id=y[1], random_id=get_random_id(), message=y[2],
                                  keyboard=keyboard.get_keyboard())
                 vk.messages.send(user_id=event.user_id, random_id=get_random_id(), message='Отправленно!'
                                  , keyboard=keyboard.get_keyboard())
+                cursor.execute("SELECT * FROM 'info'")
+                res = cursor.fetchall()
+                print(res)
+                conn.commit()
+
             except vk_api.exceptions.ApiError:
                 vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
                                  message='Я не могу отправить сообщение этому пользвотелю, подожди, пока он напишет, '
