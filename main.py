@@ -7,9 +7,9 @@ from vk_api.utils import get_random_id
 import requests
 import sqlite3
 
-#Сначала должен получить token
-#Затем , должен авторизоваться
-#Потом должен получить api
+# Сначала должен получить token
+# Затем , должен авторизоваться
+# Потом должен получить api
 
 token_bot = '01b1cd2c6b7c0ecd3a08482786382b6263ed48f0dab8d76ae87697ae360b004d0780264314f1b7770ba35'
 vk_ses = vk_api.VkApi(token=token_bot)
@@ -19,10 +19,7 @@ vk = vk_ses.get_api()
 upload = VkUpload(vk_ses)
 longpoll = VkLongPoll(vk_ses)
 
-
 send_vk = vk.messages.send
-
-
 
 bio = ('Мой создатель - Борис Кузнецов\n'
        ' \n'
@@ -32,16 +29,13 @@ bio = ('Мой создатель - Борис Кузнецов\n'
 
 keyboard = VkKeyboard(one_time=True)
 
-
-
-
 keyboard.add_button('Мой создатель', color=VkKeyboardColor.POSITIVE)
 keyboard.add_button('Поддержать проект', color=VkKeyboardColor.POSITIVE)
 keyboard.add_line()
 keyboard.add_button('Получить id', color=VkKeyboardColor.PRIMARY)
 keyboard.add_button('Как это работает?', color=VkKeyboardColor.PRIMARY)
 keyboard.add_line()
-keyboard.add_button('Об этом боте', color=VkKeyboardColor.DEFAULT)
+keyboard.add_button('Есть ли в боте этот человек?', color=VkKeyboardColor.NEGATIVE)
 
 about_bot = ('Этот бот позволяет отправлять людям анонимные сообщения\n'
              '\n'
@@ -60,20 +54,17 @@ session = requests.Session()
 for event in longpoll.listen():
     if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
         print('id{}: "{}"'.format(event.user_id, event.text), end=' ')
-        name_o = vk.users.get(user_ids = event.user_id, fields = 'city')
+        name_o = vk.users.get(user_ids=event.user_id, fields='city')
         your_name = ((str(name_o)).split(" ")[3]).replace("'", '').replace(',', '')
-        #city_o = ((str(name_o)).split(" ")[14]).replace("'", '').replace(',', '').replace('}', '').replace(']', '')
+        # city_o = ((str(name_o)).split(" ")[14]).replace("'", '').replace(',', '').replace('}', '').replace(']', '')
         print(your_name)
 
-
-
-
         if event.text == 'hello':
-            vk.messages.send(user_id = event.user_id, random_id = get_random_id(), message = 'Whats up')
+            vk.messages.send(user_id=event.user_id, random_id=get_random_id(), message='Whats up')
 
 
         elif event.text == 'Мой создатель':
-            photo = vk.users.get(user_id = event.user_id, fields = 'photo_max_orig')
+            photo = vk.users.get(user_id=event.user_id, fields='photo_max_orig')
             photo_id = vk.users.get(user_id=event.user_id, fields='photo_id')
             print(photo_id)
             print(photo)
@@ -81,13 +72,14 @@ for event in longpoll.listen():
             p_s = photo.split(' ')
             ava = p_s[11]
             ava_not = ava[1:ava.rfind("?")]
-            vk.messages.send(user_id = event.user_id, random_id = get_random_id(), message = bio,
-                             attachment = 'photo558924310_457239018', keyboard=keyboard.get_keyboard())
+            vk.messages.send(user_id=event.user_id, random_id=get_random_id(), message=bio,
+                             attachment='photo558924310_457239018', keyboard=keyboard.get_keyboard())
 
 
         elif event.text == 'Поддержать проект':
-            message = ('Чтобы поддержать прект, переведите сюда рублик и укажите свой ID, ваш  ID: '+str(event.user_id)
-                       ,'\nmoney.yandex.ru/to/410017167191435')
+            message = (
+                'Чтобы поддержать прект, переведите сюда рублик и укажите свой ID, ваш  ID: ' + str(event.user_id)
+                , '\nmoney.yandex.ru/to/410017167191435')
             vk.messages.send(user_id=event.user_id, random_id=get_random_id(), message=message
                              , keyboard=keyboard.get_keyboard())
 
@@ -95,9 +87,10 @@ for event in longpoll.listen():
             y = str(event.text).split('/')
             print(y[1])
             try:
-               vk.messages.send(user_id=y[1], random_id =get_random_id(), message =y[2], keyboard=keyboard.get_keyboard())
-               vk.messages.send(user_id=event.user_id, random_id=get_random_id(),message='Отправленно!'
-                             , keyboard=keyboard.get_keyboard())
+                vk.messages.send(user_id=y[1], random_id=get_random_id(), message=y[2],
+                                 keyboard=keyboard.get_keyboard())
+                vk.messages.send(user_id=event.user_id, random_id=get_random_id(), message='Отправленно!'
+                                 , keyboard=keyboard.get_keyboard())
             except vk_api.exceptions.ApiError:
                 vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
                                  message='Я не могу отправить сообщение этому пользвотелю, подожди, пока он напишет, '
@@ -120,24 +113,24 @@ for event in longpoll.listen():
 
         elif str(event.text).startswith('htt') or str(event.text).startswith('www') or str(event.text).startswith('vk'):
             try:
-               if str(event.text).find('id') != -1:
-                short_id_have = str(event.text)[str(event.text).find('id') + 2:]
-                print(short_id_have)
-                vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
-                                 message=short_id_have
-                                 , keyboard=keyboard.get_keyboard())
+                if str(event.text).find('id') != -1:
+                    short_id_have = str(event.text)[str(event.text).find('id') + 2:]
+                    print(short_id_have)
+                    vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
+                                     message=short_id_have
+                                     , keyboard=keyboard.get_keyboard())
 
-               else:
-                  short_id = str(event.text)[str(event.text).find('com/')+4:]
-                  print(short_id)
-                  ne_short = vk.users.get(user_ids=short_id, fields='photo_id')
-                  id_split = str(ne_short).split(' ')
-                  id_no = id_split[1].replace(',', '')
-                  #aaaaa = str(id_no)[1:id_no.find("'")]
-                  print(id_no)
-                  vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
-                                 message=id_no
-                                 , keyboard=keyboard.get_keyboard())
+                else:
+                    short_id = str(event.text)[str(event.text).find('com/') + 4:]
+                    print(short_id)
+                    ne_short = vk.users.get(user_ids=short_id, fields='photo_id')
+                    id_split = str(ne_short).split(' ')
+                    id_no = id_split[1].replace(',', '')
+                    # aaaaa = str(id_no)[1:id_no.find("'")]
+                    print(id_no)
+                    vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
+                                     message=id_no
+                                     , keyboard=keyboard.get_keyboard())
             except vk_api.exceptions.ApiError:
                 vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
                                  message='Неправильная ссылка пользователя'
@@ -153,20 +146,61 @@ for event in longpoll.listen():
                              message="отправь ссылку на человека и вначале добавь этот знак *"
                              , keyboard=keyboard.get_keyboard())
 
-        #elif str(event.text).startswith('*'): Это нужно доделать 
+        elif str(event.text).startswith('*'):
+            ok = str(event.text).replace('*', '').replace(' ', '')
+            if str(ok).startswith('htt') or str(ok).startswith('www') or str(ok).startswith('vk'):
+                try:
+                    if str(ok).find('id') != -1:
+                        short_id_have = str(ok)[str(ok).find('id') + 2:]
+                        print(short_id_have)
+                        # vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
+                        # message=short_id_have
+                        # , keyboard=keyboard.get_keyboard())
+
+                        try:
+                            vk.messages.send(user_id=short_id_have, random_id=get_random_id(),
+                                             message='Вам хотят отправить Анонимку!'
+                                             , keyboard=keyboard.get_keyboard())
+                            vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
+                                             message='Это пользователю можно отправить анонимку',
+                                             keyboard=keyboard.get_keyboard())
+
+                        except vk_api.exceptions.ApiError:
+                            vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
+                                             message='Этому пользователю мы не можем отправить Анонимку('
+                                             , keyboard=keyboard.get_keyboard())
+                    else:
+                        short_id = str(ok)[str(ok).find('com/') + 4:]
+                        print(short_id)
+                        ne_short = vk.users.get(user_ids=short_id, fields='photo_id')
+                        id_split = str(ne_short).split(' ')
+                        id_no = id_split[1].replace(',', '')
+                        # aaaaa = str(id_no)[1:id_no.find("'")]
+                        print(id_no)
+                        # vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
+                        # message=id_no
+                        # , keyboard=keyboard.get_keyboard())
+                        try:
+                            vk.messages.send(user_id=id_no, random_id=get_random_id(),
+                                             message='Вам хотят отправить Анонимку!'
+                                             , keyboard=keyboard.get_keyboard())
+                            vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
+                                             message='Это пользователю можно отправить анонимку',
+                                             keyboard=keyboard.get_keyboard())
+                        except vk_api.exceptions.ApiError:
+                            vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
+                                             message='Этому пользователю мы не можем отправить Анонимку('
+                                             , keyboard=keyboard.get_keyboard())
+                except vk_api.exceptions.ApiError:
+                    vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
+                                     message='Неправильная ссылка пользователя'
+                                     , keyboard=keyboard.get_keyboard())
+
 
 
 
 
         else:
-            vk.messages.send(user_id=event.user_id, random_id=get_random_id(), message='Не такой команды, выбирите другую'
+            vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
+                             message='Не такой команды, выбирите другую'
                              , keyboard=keyboard.get_keyboard())
-
-
-
-
-
-
-
-
-
