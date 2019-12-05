@@ -57,7 +57,7 @@ session = requests.Session()
 
 for event in longpoll.listen():
     if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
-        print('id{}: "{}"'.format(event.user_id, event.text), end=' ')
+        print('id{}: "{}"'.format(event.user_id, event.text), end=' ', encoding='utf-8')
         name_o = vk.users.get(user_ids=event.user_id, fields='city')
         your_name = ((str(name_o)).split(" ")[3]).replace("'", '').replace(',', '')
         # city_o = ((str(name_o)).split(" ")[14]).replace("'", '').replace(',', '').replace('}', '').replace(']', '')
@@ -71,8 +71,8 @@ for event in longpoll.listen():
         elif event.text == 'Мой создатель':
             photo = vk.users.get(user_id=event.user_id, fields='photo_max_orig')
             photo_id = vk.users.get(user_id=event.user_id, fields='photo_id')
-            print(photo_id)
-            print(photo)
+            print(photo_id, encoding='utf-8')
+            print(photo, encoding='utf-8')
             photo = str(photo)
             p_s = photo.split(' ')
             ava = p_s[11]
