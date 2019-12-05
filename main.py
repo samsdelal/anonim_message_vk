@@ -60,7 +60,7 @@ for event in longpoll.listen():
     if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
         y = 'id{}: "{}"'.format(event.user_id, event.text,end='')
         #print(y, end='')
-       
+
         name_o = vk.users.get(user_ids=event.user_id, fields='city')
         your_name = ((str(name_o)).split(" ")[3]).replace("'", '').replace(',', '')
         # city_o = ((str(name_o)).split(" ")[14]).replace("'", '').replace(',', '').replace('}', '').replace(']', '')
