@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# vim:fileencoding=utf-8
+
 import vk_api
 import vk_api.bot_longpoll
 from vk_api import VkUpload
@@ -59,10 +63,11 @@ for event in longpoll.listen():
         # city_o = ((str(name_o)).split(" ")[14]).replace("'", '').replace(',', '').replace('}', '').replace(']', '')
         print(your_name)
 
+        #Тестовое сообщение
         if event.text == 'hello':
             vk.messages.send(user_id=event.user_id, random_id=get_random_id(), message='Whats up')
 
-
+        #Информация о создателе бота
         elif event.text == 'Мой создатель':
             photo = vk.users.get(user_id=event.user_id, fields='photo_max_orig')
             photo_id = vk.users.get(user_id=event.user_id, fields='photo_id')
@@ -75,7 +80,7 @@ for event in longpoll.listen():
             vk.messages.send(user_id=event.user_id, random_id=get_random_id(), message=bio,
                              attachment='photo558924310_457239018', keyboard=keyboard.get_keyboard())
 
-
+        #Вкладка поддержать проект
         elif event.text == 'Поддержать проект':
             message = (
                 'Чтобы поддержать прект, переведите сюда рублик и укажите свой ID, ваш  ID: ' + str(event.user_id)
@@ -145,6 +150,7 @@ for event in longpoll.listen():
             vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
                              message="отправь ссылку на человека и вначале добавь этот знак *"
                              , keyboard=keyboard.get_keyboard())
+
 
         elif str(event.text).startswith('*'):
             ok = str(event.text).replace('*', '').replace(' ', '')
