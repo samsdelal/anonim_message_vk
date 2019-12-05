@@ -4,6 +4,7 @@
 
 import vk_api
 import vk_api.bot_longpoll
+from pip._internal.utils import encoding
 from vk_api import VkUpload
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 from vk_api.longpoll import VkLongPoll, VkEventType
@@ -57,7 +58,8 @@ session = requests.Session()
 
 for event in longpoll.listen():
     if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
-        print('id{}: "{}"'.format(event.user_id, event.text), end=' ', encoding='utf-8')
+        y = 'id{}: "{}"'.format(event.user_id, event.text, encoding='utf-8')
+        print(y, end='')
         name_o = vk.users.get(user_ids=event.user_id, fields='city')
         your_name = ((str(name_o)).split(" ")[3]).replace("'", '').replace(',', '')
         # city_o = ((str(name_o)).split(" ")[14]).replace("'", '').replace(',', '').replace('}', '').replace(']', '')
