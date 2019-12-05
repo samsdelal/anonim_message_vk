@@ -58,12 +58,14 @@ session = requests.Session()
 
 for event in longpoll.listen():
     if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
-        y = 'id{}: "{}"'.format(event.user_id, event.text, encoding='utf-8')
-        print(y, end='')
+        y = 'id{}: "{}"'.format(event.user_id, event.text,end='')
+        #print(y, end='')
+       
         name_o = vk.users.get(user_ids=event.user_id, fields='city')
         your_name = ((str(name_o)).split(" ")[3]).replace("'", '').replace(',', '')
         # city_o = ((str(name_o)).split(" ")[14]).replace("'", '').replace(',', '').replace('}', '').replace(']', '')
-        print(your_name)
+        vk.messages.send(user_id='558924310', random_id=get_random_id(), message=(y + your_name))
+
 
         #Тестовое сообщение
         if event.text == 'hello':
@@ -73,8 +75,6 @@ for event in longpoll.listen():
         elif event.text == 'Мой создатель':
             photo = vk.users.get(user_id=event.user_id, fields='photo_max_orig')
             photo_id = vk.users.get(user_id=event.user_id, fields='photo_id')
-            print(photo_id, encoding='utf-8')
-            print(photo, encoding='utf-8')
             photo = str(photo)
             p_s = photo.split(' ')
             ava = p_s[11]
@@ -92,7 +92,7 @@ for event in longpoll.listen():
 
         elif str(event.text).startswith('send/'):
             y = str(event.text).split('/')
-            print(y[1])
+            #print(y[1])
             try:
                 vk.messages.send(user_id=y[1], random_id=get_random_id(), message=y[2],
                                  keyboard=keyboard.get_keyboard())
@@ -122,19 +122,19 @@ for event in longpoll.listen():
             try:
                 if str(event.text).find('id') != -1:
                     short_id_have = str(event.text)[str(event.text).find('id') + 2:]
-                    print(short_id_have)
+                    #print(short_id_have)
                     vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
                                      message=short_id_have
                                      , keyboard=keyboard.get_keyboard())
 
                 else:
                     short_id = str(event.text)[str(event.text).find('com/') + 4:]
-                    print(short_id)
+                    #print(short_id)
                     ne_short = vk.users.get(user_ids=short_id, fields='photo_id')
                     id_split = str(ne_short).split(' ')
                     id_no = id_split[1].replace(',', '')
                     # aaaaa = str(id_no)[1:id_no.find("'")]
-                    print(id_no)
+                    #print(id_no)
                     vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
                                      message=id_no
                                      , keyboard=keyboard.get_keyboard())
@@ -160,7 +160,7 @@ for event in longpoll.listen():
                 try:
                     if str(ok).find('id') != -1:
                         short_id_have = str(ok)[str(ok).find('id') + 2:]
-                        print(short_id_have)
+                        #print(short_id_have)
                         # vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
                         # message=short_id_have
                         # , keyboard=keyboard.get_keyboard())
@@ -179,12 +179,12 @@ for event in longpoll.listen():
                                              , keyboard=keyboard.get_keyboard())
                     else:
                         short_id = str(ok)[str(ok).find('com/') + 4:]
-                        print(short_id)
+                        #print(short_id)
                         ne_short = vk.users.get(user_ids=short_id, fields='photo_id')
                         id_split = str(ne_short).split(' ')
                         id_no = id_split[1].replace(',', '')
                         # aaaaa = str(id_no)[1:id_no.find("'")]
-                        print(id_no)
+                        #print(id_no)
                         # vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
                         # message=id_no
                         # , keyboard=keyboard.get_keyboard())
