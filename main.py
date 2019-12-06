@@ -15,11 +15,11 @@ import sqlite3
 
 
 
-# Сначала должен получить token
-# Затем , должен авторизоваться
-# Потом должен получить api
 
+#Это токен группы , который я создал
 token_bot = '01b1cd2c6b7c0ecd3a08482786382b6263ed48f0dab8d76ae87697ae360b004d0780264314f1b7770ba35'
+
+#А это я подключаюсь к сессии, используя токен
 vk_ses = vk_api.VkApi(token=token_bot)
 
 vk = vk_ses.get_api()
@@ -34,16 +34,18 @@ bio = ('Мой создатель - Борис Кузнецов\n'
        ' Студент 1 курса НГУ Экономического Факультета отделения Бизнес- Информатика\n'
        ' \n'
        ' Этот бот был разработан им, как  большой проект , для предмета программирования ')
-
+#Сделал клавиатуру
 keyboard = VkKeyboard(one_time=True)
 
-keyboard.add_button('Поддержать проект 💰', color=VkKeyboardColor.POSITIVE)
+keyboard.add_button('Поддержать проект 💰', color=VkKeyboardColor.DEFAULT)
+keyboard.add_button('Мои анонимки 📨')
 keyboard.add_line()
 keyboard.add_button('Есть ли в боте этот человек? 🔎', color=VkKeyboardColor.NEGATIVE)
 keyboard.add_line()
 keyboard.add_button('Справка 📝', color=VkKeyboardColor.PRIMARY)
 keyboard.add_button('Получить id 📲', color=VkKeyboardColor.PRIMARY)
 
+#Сделал еще одну клавиатуру
 keyboard_1 = VkKeyboard(one_time=True)
 
 keyboard_1.add_button('Как это работает? 💻', color=VkKeyboardColor.PRIMARY)
@@ -64,12 +66,13 @@ about_bot = ('Этот бот позволяет отправлять людям
              'Так что скорее зови друзей ,\n'
              'И отсылай им свои анонимки)')
 
+#Это я сделал , чтобы лог записывать
+
 data_now = str(datetime.now())
 
-session = requests.Session()
 
 
-
+#C помощью этого цикла, бот следит за тем , что присходит
 for event in longpoll.listen():
     if event.type == VkEventType.MESSAGE_NEW and event.to_me and event.text:
 
@@ -112,16 +115,20 @@ for event in longpoll.listen():
             y = str(event.text).split('/')
             # print(y[1])
             try:
+                #Подключаемся к базе данных
                 conn = sqlite3.connect('my_db.db')
+
+                #Cоздаем курсор (Это типо обьект , который делает запросы , а также получает ответы на запросы)
                 cursor = conn.cursor()
+                print(y[1], y[2])
+
+                #C помощью ранеее созданного обьекта втсавялем переменные базу данных
                 cursor.execute(("INSERT INTO 'info' VALUES (?, ?)"), (y[1], y[2]))
                 vk.messages.send(user_id=y[1], random_id=get_random_id(), message=y[2],
                                  keyboard=keyboard.get_keyboard())
                 vk.messages.send(user_id=event.user_id, random_id=get_random_id(), message='Отправленно!'
                                  , keyboard=keyboard.get_keyboard())
-                cursor.execute("SELECT * FROM 'info'")
-                res = cursor.fetchall()
-                print(res)
+                #Комитим все что у нас получилось
                 conn.commit()
 
             except vk_api.exceptions.ApiError:
@@ -240,8 +247,25 @@ for event in longpoll.listen():
                              , keyboard=keyboard.get_keyboard())
 
 
+        elif event.text == 'Мои анонимки 📨':
 
+            #Аналогично , как ранее я говорил
+            conn = sqlite3.connect('my_db.db')
+            cursor = conn.cursor()
+            cursor.execute(("SELECT mes FROM info WHERE id = :who"), {'who': str(event.user_id)})
 
+            #С помощью этого выводим все одьекты, которые мы получили из запроса
+            res = cursor.fetchall()
+            print(res)
+            conn.commit()
+
+            print_res = str(res).replace("'",'').replace("(", '').replace(")", '').replace(']', '').replace('[', '')
+            print(print_res)
+
+            vk.messages.send(user_id=event.user_id,
+                             random_id=get_random_id(),
+                             message=print_res,
+                             keyboard=keyboard.get_keyboard())
 
         else:
             vk.messages.send(user_id=event.user_id, random_id=get_random_id(),
